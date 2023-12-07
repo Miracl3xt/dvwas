@@ -1,13 +1,16 @@
 name: build
+
 on:
   push:
     branches:
       - main
   pull_request:
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-20.04
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -27,4 +30,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: trivy-results.sarif
-          token: ${{ secrets.GGWP }}
+          token: ${{ secrets.GGWP }}  # Ensure 'GGWP' secret is properly defined in repository settings
