@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:buster
 
 MAINTAINER Cyrivs89 <1.marioromero1989@gmail.com>
 
@@ -10,11 +10,11 @@ RUN apt-get update && \
     echo mysql-server-5.5 mysql-server/root_password_again password | debconf-set-selections && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
     apache2 \
-    mysql-server \
-    php5 \
-    php5-mysql \
+    mariadb-server \
+    php \
+    php-mysql \
     php-pear \
-    php5-gd \
+    php-gd \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -28,4 +28,5 @@ RUN chown www-data:www-data -R /var/www/html && \
 EXPOSE 80
 
 COPY main.sh /
+
 ENTRYPOINT ["/main.sh"]
