@@ -3,7 +3,7 @@ name: Trufflehog Scan
 on:
   push:
     branches:
-      - main  # Change this to your main branch name
+      - main
 
 jobs:
   trufflehog-scan:
@@ -23,7 +23,12 @@ jobs:
 
       - name: Save Trufflehog output
         id: save-output
-        run: echo "::set-output name=result::$(trufflehog --entropy=True .)"
+        run: |
+          scan_output=$(trufflehog --entropy=True .)
+          echo "$scan_output" > trufflehog-results.txt
+
+      - name: Show Trufflehog results
+        run: cat trufflehog-results.txt
 
       - name: Upload Trufflehog results to GitHub Security
         uses: github/codeql-action/upload-sarif@v1
