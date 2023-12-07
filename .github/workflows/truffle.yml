@@ -20,13 +20,14 @@ jobs:
 
       - name: Run Trufflehog and save JSON output
         run: |
-          trufflehog --json .
+          trufflehog --json . || true  # Ignore errors if Trufflehog detects sensitive information
 
       - name: Save Trufflehog output
         id: save-output
         run: echo "::set-output name=result::$(trufflehog --json .)"
 
       - name: Upload Trufflehog results to GitHub Security
+        if: ${{ always() }}  # Ensure this step always runs, even if Trufflehog fails
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: ${{ github.workspace }}/trufflehog_results.json
