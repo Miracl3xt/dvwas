@@ -1,4 +1,4 @@
-name: Semgrep New
+name: Semgrep Nerrrrr
 
 on:
   workflow_dispatch:
@@ -29,9 +29,8 @@ jobs:
             --config="p/default" \
             $GITHUB_WORKSPACE
 
-      # step 3: Upload SARIF results as code scanning alerts
-      - name: Upload Semgrep results
-        uses: github/codeql-action/upload-sarif@v1
+      # step 3: Upload Semgrep scan results to GitHub Security tab
+      - name: Upload Semgrep scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: report.sarif
-
+          sarif_file: 'report.sarif'
