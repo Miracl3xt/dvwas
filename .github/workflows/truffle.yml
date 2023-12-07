@@ -23,18 +23,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run Trufflehog secret scanner
-        run: |
-          pip install trufflehog
-          pip install joern2sarif
-          trufflehog --regex --entropy=False --json . > trufflehog-results.json
-
-      - name: Convert findings to SARIF format
-        run: |
-          pip install joern2sarif
-          joern2sarif -i trufflehog-results.json -o output/trufflehog-findings.sarif
-
-      - name: Upload Trufflehog scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+      - name: clone application source code
+        uses: actions/checkout@v3
         with:
-          sarif_file: 'trufflehog-findings.sarif'
+          path: ./code
+    
+      #step3: Install Semgrep
+      - name: Install Semgrep
+        run: |
+          python -m pip install --upgrade pip
+          python3 -m pip install semgrep
+      
+      #step4: Code scan
+      - name: Scan
+        env:
+          SEMGREP_RULES_PATH: ./SemgrepRules
+        run: |
+          python -m semgrep --config "p/ci" --config auto . --output $(date +"%d-%m-%Y").json --json > scanSummry.txt 2>&1
+
+      #step5: get current date  
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%d-%m-%Y')"
+
+      #step6: Push report to artifact.
+      - name: save report as pipeline artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: ${{ steps.date.outputs.date }}.json
+            path: .
