@@ -36,10 +36,8 @@ jobs:
       
       #step4: Code scan
       - name: Scan
-        env:
-          SEMGREP_RULES_PATH: ./SemgrepRules
         run: |
-          python -m semgrep --config --config auto . --output $(date +"%d-%m-%Y").json --json > scanSummry.txt 2>&1
+          python -m semgrep --config --config auto . --output hello.json --json > hhello.txt 2>&1
 
       #step5: get current date  
       - name: Get current date
@@ -50,5 +48,5 @@ jobs:
       - name: save report as pipeline artifact
         uses: actions/upload-artifact@v3
         with:
-            name: ${{ steps.date.outputs.date }}.json
+            name: hello.json
             path: .
