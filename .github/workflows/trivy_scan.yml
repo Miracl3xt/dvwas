@@ -1,26 +1,29 @@
-name: Trivy Scan
-
+name: build
 on:
   push:
     branches:
-      - main  # Replace 'main' with your default branch name
-
+      - main
+  pull_request:
 jobs:
-  trivy_scan:
-    runs-on: ubuntu-latest
-
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        # Explicitly set Node.js version to 16
-        run: |
-          npm install -g n
-          n 16
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Build Docker image
-        run: docker build -t your-image-name:latest .
-
-      - name: Run Trivy scan
+      - name: Build an image from Dockerfile
         run: |
-          docker pull your-image-name:latest
-          docker run --rm -v $(pwd):/workdir aquasec/trivy your-image-name:latest
+          docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
