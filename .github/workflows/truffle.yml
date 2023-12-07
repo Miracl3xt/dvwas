@@ -3,31 +3,29 @@ name: Trufflehog Scan
 on:
   push:
     branches:
-      - main  # Change this to your main branch name
-  # You can also add additional triggers, such as pull_request events
+      - main
 
 jobs:
-  trufflehog-scan:
+  trufflehog_scan:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Trufflehog
-        run: |
-          pip install trufflehog
-
-      - name: Run Trufflehog and save JSON output
-        run: |
-          trufflehog --json . || true  # Ignore errors if Trufflehog detects sensitive information
-
-      - name: Save Trufflehog output
-        id: save-output
-        run: echo "::set-output name=result::$(trufflehog --json .)"
-
-      - name: Upload Trufflehog results to GitHub Security
-        if: ${{ always() }}  # Ensure this step always runs, even if Trufflehog fails
-        uses: github/codeql-action/upload-sarif@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          sarif_file: ${{ github.workspace }}/trufflehog_results.json
+          python-version: '3.x'
+
+      - name: Install Trufflehog
+        run: pip install trufflehog
+
+      - name: Run Trufflehog Scan
+        run: trufflehog --regex --entropy=false . > trufflehog_results.txt  # Save results to a file
+
+      - name: Upload Trufflehog Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: trufflehog-results
+          path: trufflehog_results.txt  # Upload the file as an artifact
