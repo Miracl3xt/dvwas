@@ -1,4 +1,4 @@
-name: Trufflehog Scan
+name: Trufflehog
 
 on:
   push:
