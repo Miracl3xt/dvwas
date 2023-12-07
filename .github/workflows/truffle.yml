@@ -26,11 +26,12 @@ jobs:
       - name: Run Trufflehog secret scanner
         run: |
           pip install trufflehog
-          pip install trufflehog2sarif
+          pip install joern2sarif
           trufflehog --regex --entropy=False --json . > trufflehog-results.json
 
-      - name: Convert Trufflehog results to SARIF format
-        run: python -m trufflehog2sarif -i trufflehog-results.json -o trufflehog-results.sarif
+      - name: Convert findings to SARIF format
+        run: |
+          joern2sarif -i trufflehog-results.json -o trufflehog-findings.sarif
 
       - name: Upload Trufflehog scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
