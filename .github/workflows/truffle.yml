@@ -3,7 +3,8 @@ name: Trufflehog Scan
 on:
   push:
     branches:
-      - main
+      - main  # Change this to your main branch name
+  # You can also add additional triggers, such as pull_request events
 
 jobs:
   trufflehog-scan:
@@ -17,21 +18,16 @@ jobs:
         run: |
           pip install trufflehog
 
-      - name: Run Trufflehog
+      - name: Run Trufflehog and save JSON output
         run: |
-          trufflehog --entropy=True .
+          trufflehog --json .
 
       - name: Save Trufflehog output
         id: save-output
-        run: |
-          scan_output=$(trufflehog --entropy=True .)
-          echo "$scan_output" > trufflehog-results.txt
-
-      - name: Show Trufflehog results
-        run: cat trufflehog-results.txt
+        run: echo "::set-output name=result::$(trufflehog --json .)"
 
       - name: Upload Trufflehog results to GitHub Security
         uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: ${{ github.workspace }}/trufflehog-results.sarif
+          sarif_file: ${{ github.workspace }}/trufflehog_results.json
           enable_semantic_merge: true
