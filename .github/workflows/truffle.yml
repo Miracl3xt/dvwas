@@ -1,0 +1,32 @@
+name: Trufflehog Scan
+
+on:
+  push:
+    branches:
+      - main  # Change this to your main branch name
+
+jobs:
+  trufflehog-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Trufflehog
+        run: |
+          pip install trufflehog
+
+      - name: Run Trufflehog
+        run: |
+          trufflehog --entropy=True .
+
+      - name: Save Trufflehog output
+        id: save-output
+        run: echo "::set-output name=result::$(trufflehog --entropy=True .)"
+
+      - name: Upload Trufflehog results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ github.workspace }}/trufflehog-results.sarif
+          enable_semantic_merge: true
