@@ -26,7 +26,7 @@ jobs:
       - name: Run Trufflehog secret scanner
         run: |
           pip install trufflehog
-          trufflehog --regex --entropy=False -json . > trufflehog-results.json
+          trufflehog --regex --entropy=False --json . > trufflehog-results.json
 
       - name: Convert Trufflehog results to SARIF format
         run: python -m trufflehog2sarif -i trufflehog-results.json -o trufflehog-results.sarif
