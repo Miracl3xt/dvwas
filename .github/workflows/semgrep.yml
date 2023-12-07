@@ -1,0 +1,36 @@
+name: Semgrep SCAN
+
+on:
+  workflow_dispatch:
+    branches:
+      - main
+  schedule:
+    - cron: '0 1 * * 6'
+
+jobs:
+
+  semgrep-full:
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+
+    steps:
+
+      # step 1: Clone application source code
+      - name: clone application source code
+        uses: actions/checkout@v3
+
+      # step 2: Full scan
+      - name: full scan
+        run: |
+          semgrep \
+            --sarif --output report.sarif \
+            --metrics=off \
+            --config="p/default" \
+            $GITHUB_WORKSPACE
+
+      # step 3: Upload Semgrep scan results to GitHub Security tab
+      - name: Upload Semgrep scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'report.sarif'
