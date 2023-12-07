@@ -31,6 +31,7 @@ jobs:
 
       - name: Convert findings to SARIF format
         run: |
+          pip install joern2sarif
           joern2sarif -i trufflehog-results.json -o trufflehog-findings.sarif
 
       - name: Upload Trufflehog scan results to GitHub Security tab
