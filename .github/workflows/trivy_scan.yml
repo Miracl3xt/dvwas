@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        # Explicitly set Node.js version to 16
+        run: |
+          npm install -g n
+          n 16
 
       - name: Build Docker image
         run: docker build -t your-image-name:latest .
